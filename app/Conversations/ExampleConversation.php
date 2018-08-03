@@ -13,33 +13,48 @@ class ExampleConversation extends Conversation
     /**
      * First question
      */
-    public function askReason()
+    public function askLanguage()
     {
-        $question = Question::create("Huh - you woke me up. What do you need?")
-            ->fallback('Unable to ask question')
-            ->callbackId('ask_reason')
-            ->addButtons([
-                Button::create('Tell a joke')->value('joke'),
-                Button::create('Give me a fancy quote')->value('quote'),
-            ]);
+        $this->ask('Hello! Please text!', function(Answer $answer) {
+            // Save result
 
-        return $this->ask($question, function (Answer $answer) {
-            if ($answer->isInteractiveMessageReply()) {
-                if ($answer->getValue() === 'joke') {
-                    $joke = json_decode(file_get_contents('http://api.icndb.com/jokes/random'));
-                    $this->say($joke->value->joke);
-                } else {
-                    $this->say(Inspiring::quote());
-                }
-            }
+            $this->language = $answer->getText();
+            
+
+      $url = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
+      $header = array( 
+            "Content-Type: application/x-www-form-urlencoed", //ファイルの種類
+            "Accept: application/jwt",
+            "Content-Length: 0",
+            'Ocp-Apim-Subscription-Key: 5dfa2fc3bdad421f9e8745a242d55075'//Microsoft Translator Text APIキー
+            ); //キー隠す
+ 
+        $context = array( 
+            "http" => array(
+            "method" => "POST",
+            "header" => implode("\r\n", $header)
+         ));
+ 
+        $token = file_get_contents($url, false, stream_context_create($context));//アクセストークンを取得
+        
+        $key = "Bearer%20". $token;
+        $text = $this->language;
+        $url = "https://api.microsofttranslator.com/v2/http.svc/Translate";
+        $data = "?appid=".$key."&text=".$text."&to=ja";
+        $this->language = file_get_contents($url.$data);
+        $this->language = preg_replace('/<("[^"]*"|\'[^\']*\'|[^\'">])*>/','',$this->language);//タグの除去を正規表現により行う
+    
+        
+        
+     //   $this->say($answer->getText);
+            $this->say($this->language);
+
         });
     }
 
-    /**
-     * Start the conversation
-     */
     public function run()
     {
-        $this->askReason();
+        // This will be called immediately
+        $this->askLanguage();
     }
 }
