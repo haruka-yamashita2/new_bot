@@ -9,6 +9,6 @@ $botman = resolve('botman');
       //      $bot->say('Welcome '.$answer->getText());
 //    });
 //});
-$botman->hears('hi', BotManController::class.'@startConversation');
+$botman->hears('', BotManController::class.'@startConversation');
 
 $botman->hears('Start translation', BotManController::class.'@startTranslation');

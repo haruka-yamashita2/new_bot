@@ -20,6 +20,8 @@ class ExampleConversation extends Conversation
 
             $this->language = $answer->getText();
             
+         $str = mb_convert_kana($this->language, "S");
+            
 
       $url = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
       $header = array( 
@@ -38,16 +40,16 @@ class ExampleConversation extends Conversation
         $token = file_get_contents($url, false, stream_context_create($context));//アクセストークンを取得
         
         $key = "Bearer%20". $token;
-        $text = $this->language;
+        $text = $str;
         $url = "https://api.microsofttranslator.com/v2/http.svc/Translate";
         $data = "?appid=".$key."&text=".$text."&to=ja";
-        $this->language = file_get_contents($url.$data);
-        $this->language = preg_replace('/<("[^"]*"|\'[^\']*\'|[^\'">])*>/','',$this->language);//タグの除去を正規表現により行う
+        $str = file_get_contents($url.$data);
+        $str = preg_replace('/<("[^"]*"|\'[^\']*\'|[^\'">])*>/','',$str);//タグの除去を正規表現により行う
     
         
         
      //   $this->say($answer->getText);
-            $this->say($this->language);
+            $this->say($str);
 
         });
     }
