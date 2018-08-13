@@ -20,8 +20,10 @@ class ExampleConversation extends Conversation
 
             $this->language = $answer->getText();
             
-         $str = mb_convert_kana($this->language, "S");
+            //言語識別処理
             
+          $str = mb_convert_kana($this->language, "S");
+          
 
       $url = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
       $header = array( 

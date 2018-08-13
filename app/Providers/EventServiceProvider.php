@@ -16,6 +16,11 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Event' => [
             'App\Listeners\EventListener',
         ],
+        // アクセス時にイベントを発行する側 //追加
+        'App\Events\AccessDetection' => [
+            // テキストを生成＆書き込みを行うリスナー側
+            'App\Listeners\Make TextListener', //追加
+            ],
     ];
 
     /**
